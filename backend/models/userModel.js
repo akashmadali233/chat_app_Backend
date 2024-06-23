@@ -20,10 +20,10 @@ module.exports = (sequelize, DataTypes) => {
     }
   });
 
-  User.associate = function(models) {
-    User.belongsToMany(models.chat, { through: 'ChatUsers', as: 'chats', foreignKey: 'userId' });
-    User.hasMany(models.message, { as: 'messages', foreignKey: 'sender' });
-  };
+  // User.associate = function(models) {
+  //   User.belongsToMany(models.chat, { through: 'ChatUsers', as: 'chats', foreignKey: 'userId' });
+  //   User.hasMany(models.message, { as: 'messages', foreignKey: 'sender' });
+  // };
 
   return User;
 };

@@ -7,7 +7,7 @@ const User = db.users;
 
 const registerUser = async (req, res) => {
     const {name, email, password, pic} = req.body;
-
+    
     if(!name || !email || !password){
         res.status(400);
         throw new error("Please Enter all the Feilds")

@@ -1,18 +1,22 @@
 const express = require('express');
-const app = express();
+const compression = require('compression');
 const dotenv = require('dotenv');
-dotenv.config();
 const multer = require('multer');
-const upload = multer();
 const { sequelize } = require('./models');
-
-app.use(upload.array());
-
 const userRoutes = require('./routers/userRoutes');
-app.use('/api/user', userRoutes);
+dotenv.config();
+
+const app = express();
+const upload = multer();
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(upload.array());
+app.use(compression());
+
+
+app.use('/api', userRoutes);
 
 const PORT = process.env.PORT || 3000;
-
 
 sequelize.sync({ force: false })
   .then(() => {

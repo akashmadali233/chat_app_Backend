@@ -22,10 +22,10 @@ module.exports = (sequelize, DataTypes) => {
     }
   });
 
-  Message.associate = function(models) {
-    Message.belongsTo(models.user, { as: 'user', foreignKey: 'sender' });
-    Message.belongsTo(models.chat, { as: 'chat', foreignKey: 'chatId' });
-  };
+  // Message.associate = function(models) {
+  //   Message.belongsTo(models.user, { as: 'user', foreignKey: 'sender' });
+  //   Message.belongsTo(models.chat, { as: 'chat', foreignKey: 'chatId' });
+  // };
 
   return Message;
 };
