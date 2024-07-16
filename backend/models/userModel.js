@@ -1,12 +1,12 @@
 module.exports = (sequelize, DataTypes) => {
-  const User = sequelize.define('user', {
+  const User = sequelize.define('User', {
     name: {
       type: DataTypes.STRING,
       allowNull: false
     },
     email: {
       type: DataTypes.STRING,
-      unique : true,
+      unique: true,
       allowNull: false
     },
     password: {
@@ -20,10 +20,10 @@ module.exports = (sequelize, DataTypes) => {
     }
   });
 
-  // User.associate = function(models) {
-  //   User.belongsToMany(models.chat, { through: 'ChatUsers', as: 'chats', foreignKey: 'userId' });
-  //   User.hasMany(models.message, { as: 'messages', foreignKey: 'sender' });
-  // };
+  User.associate = (models) => {
+    User.hasMany(models.Message, { foreignKey: 'senderId' });
+    User.hasMany(models.Chat, { foreignKey: 'groupAdminId' });
+  };
 
   return User;
 };

@@ -1,9 +1,9 @@
 const db = require('../models')
 const generateToken = require('../config/generateToken')
 const bcrypt = require('bcrypt');
+const { Op } = require('sequelize'); 
 
-
-const User = db.users;
+const User = db.User;
 
 const registerUser = async (req, res) => {
     const {name, email, password, pic} = req.body;
@@ -34,7 +34,7 @@ const registerUser = async (req, res) => {
             name : user.name,
             email: user.email,
             pic : user.pic,
-            token : generateToken.generateToken(user.id),
+            token : generateToken(user.id),
         })
     }else{
         res.status(400);
@@ -76,12 +76,34 @@ const authUser = async (req, res) => {
         name : existingUser.name,
         email: existingUser.email,
         pic : existingUser.pic,
-        token : generateToken.generateToken(existingUser.id),
+        token : generateToken(existingUser.id),
     })
-
 }
+
+const allUsers = async (req, res) => {
+    const search = req.query.search || '';
+
+  try {
+    const users = await User.findAll({
+      where: {
+        [Op.or]: [
+          { name: { [Op.like]: `%${search}%` } },
+          { email: { [Op.like]: `%${search}%` } },
+        ],
+      },
+    });
+
+    res.json(users);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  }
+}
+
+
 
 module.exports = {
     registerUser,
-    authUser
+    authUser,
+    allUsers
 };

@@ -2,8 +2,9 @@ const express = require('express');
 const compression = require('compression');
 const dotenv = require('dotenv');
 const multer = require('multer');
-const { sequelize } = require('./models');
-const userRoutes = require('./routers/userRoutes');
+const { sequelize } = require('./models'); // Assuming your models are in the ./models directory
+const userRoutes = require('./routers/userRoutes'); // Adjust path as necessary
+const chatRoutes = require('./routers/chatRoutes'); // Adjust path as necessary
 dotenv.config();
 
 const app = express();
@@ -13,18 +14,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(upload.array());
 app.use(compression());
 
-
-app.use('/api', userRoutes);
+app.use('/api/user', userRoutes);
+app.use('/api/chat', chatRoutes);
 
 const PORT = process.env.PORT || 3000;
-
-sequelize.sync({ force: false })
-  .then(() => {
-    console.log('Database & tables created!');
-  })
-  .catch(err => {
-    console.error('Unable to connect to the database:', err);
-  });
 
 app.listen(PORT, () => {
   console.log(`Server started on PORT ${PORT}`);

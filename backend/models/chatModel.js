@@ -1,11 +1,13 @@
-// models/chatModel.js
-
 module.exports = (sequelize, DataTypes) => {
-  const Chat = sequelize.define('chat', {
+  const Chat = sequelize.define('Chat', {
     chatName: {
       type: DataTypes.STRING,
       allowNull: false,
       trim: true
+    },
+    users : {
+      type: DataTypes.JSON,
+      allowNull : false,
     },
     isGroupChat: {
       type: DataTypes.BOOLEAN,
@@ -14,14 +16,14 @@ module.exports = (sequelize, DataTypes) => {
     latestMessageId: {
       type: DataTypes.INTEGER,
       references: {
-        model: 'messages',
+        model: 'Messages',
         key: 'id'
       }
     },
     groupAdminId: {
       type: DataTypes.INTEGER,
       references: {
-        model: 'users',
+        model: 'Users',
         key: 'id'
       }
     }
@@ -29,11 +31,10 @@ module.exports = (sequelize, DataTypes) => {
     timestamps: true
   });
 
-  // Chat.associate = function(models) {
-  //   Chat.belongsToMany(models.user, { through: 'ChatUsers', as: 'users', foreignKey: 'chatId' });
-  //   Chat.belongsTo(models.message, { as: 'latestMessage', foreignKey: 'latestMessageId' });
-  //   Chat.belongsTo(models.user, { as: 'groupAdmin', foreignKey: 'groupAdminId' });
-  // };
+  Chat.associate = (models) => {
+    Chat.hasMany(models.Message, { foreignKey: 'chatId' });
+    Chat.belongsTo(models.User, { foreignKey: 'groupAdminId', as: 'groupAdmin' });
+  };
 
   return Chat;
 };

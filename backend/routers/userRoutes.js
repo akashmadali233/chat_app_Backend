@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
+const protect = require('../middlewares/authMiddleware');
 const userController = require('../controllers/userController');
 
-// Log the request body to check if data is being received
-router.post('/user/signup', userController.registerUser);
-
-router.post('/user/login', userController.authUser);
+router.post('/signup', userController.registerUser);
+router.post('/login', userController.authUser);
+//router.get('', protect, userController.allUsers);
 
 module.exports = router;
