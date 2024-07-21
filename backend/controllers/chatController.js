@@ -63,47 +63,77 @@ const accessChat = async (req, res) => {
     }
 };
 
-
 const fetchChats = async (req, res) => {
   try {
-    const currentUserId = req.user.id; 
-    
-    const chats = await Chat.findAll({
-      where: {
-        [Op.or]: [
-          Sequelize.literal(`JSON_CONTAINS(users, '${JSON.stringify([String(currentUserId)])}', '$')`)
-        ]
-      }
-    });
-
-    const uniqueUsers = {};
-
-    for (const chat of chats) {
-      const users = await User.findAll({
-        where: { id: { [Op.in]: chat.users } }, 
-        attributes: ['id', 'name', 'email', 'pic', 'createdAt', 'updatedAt']
-      });
-
-      users.forEach(user => {
-        if (!uniqueUsers[user.id]) {
-          uniqueUsers[user.id] = {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            pic: user.pic,
-            createdAt: user.createdAt,
-            updatedAt: user.updatedAt
-          };
+        const currentUserId = req.user.id; 
+        
+        const chats = await Chat.findAll({
+        where: {
+            [Op.or]: [
+            Sequelize.literal(`JSON_CONTAINS(users, '${JSON.stringify([String(currentUserId)])}', '$')`)
+            ]
         }
-      });
+        });
+
+        
+        let formatedDataDetails = [];
+        
+        for(const chat of chats){
+            let userDetails = [];
+            let adminDetails = [];
+            
+            for(const user of chat.users){
+                const userData = await User.findOne({
+                    where : {
+                        id : user
+                    }
+                })
+
+                if(user == chat.groupAdminId){
+                    adminDetails.push(userData);
+                }else{
+                    userDetails.push(userData)
+                }
+            }
+            
+            const messageDetails = await Message.findOne({
+                where :{
+                    id : chat.latestMessageId
+                }
+            })
+            //formatedDataDetails.push(messageDetails)
+            if(messageDetails != null){
+                var senderDetails = await User.findOne({where : { id : messageDetails.senderId}})
+            }
+            
+            var latestMessage = {
+                id : messageDetails ? messageDetails.id : null,
+                sender : senderDetails ? senderDetails:null,
+                content : messageDetails ? messageDetails.content : null,
+                chat : chat.id,
+                createdAt : messageDetails ? messageDetails.createdAt : null,
+                updatedAt : messageDetails ? messageDetails.updatedAt : null
+            }
+
+            var formatedData = {
+                id : chat.id,
+                chatName : chat.chatName,
+                isGroupChat : chat.isGroupChat,
+                users : userDetails,
+                groupAdmin : adminDetails,
+                createdAt :  chat.createdAt,
+                updatedAt :  chat.updatedAt,
+                latestMessage : latestMessage ? latestMessage : null,
+            }
+            formatedDataDetails.push(formatedData);
+        }
+
+        res.status(200).json(formatedDataDetails );
+
+    } catch (error) {
+        console.error('Error querying Chat:', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
-
-    res.status(200).json({ users: Object.values(uniqueUsers) });
-
-  } catch (error) {
-    console.error('Error querying Chat:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
 };
 
 
@@ -275,7 +305,7 @@ const removeFromGroup = async (req, res) => {
         const userIdStr = String(userId);
         const updatedUsers = users.filter(user => user !== userIdStr);
 
-        if (updatedUsers.length == users.length) {
+        if (updatedUsers.length === users.length) {
             return res.status(400).json({ message: 'User is not in the group' });
         }
 

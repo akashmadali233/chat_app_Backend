@@ -3,8 +3,8 @@ const router = express.Router();
 const protect = require('../middlewares/authMiddleware');
 const userController = require('../controllers/userController');
 
-router.post('/signup', userController.registerUser);
+router.post('/', userController.registerUser);
 router.post('/login', userController.authUser);
-//router.get('', protect, userController.allUsers);
+router.get('', protect, userController.allUsers);
 
 module.exports = router;

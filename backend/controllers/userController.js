@@ -42,6 +42,7 @@ const registerUser = async (req, res) => {
     } 
 }
 
+
 const authUser = async (req, res) => {
     const {email, password} = req.body;
 
@@ -79,6 +80,7 @@ const authUser = async (req, res) => {
         token : generateToken(existingUser.id),
     })
 }
+
 
 const allUsers = async (req, res) => {
     const search = req.query.search || '';
