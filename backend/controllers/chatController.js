@@ -149,10 +149,14 @@ const createGroupChat = async (req, res) => {
     users.push(String(req.user.id));
 
     try {
+        let userData = [];
+        users.forEach(user => {
+            userData.push(String(user));
+        })
         const chatData = {
             chatName: req.body.name,
             isGroupChat: true,
-            users: users,
+            users: userData,
             groupAdminId: req.user.id
         };
 

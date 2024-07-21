@@ -106,13 +106,16 @@ const MyChats = ({ fetchAgain }) => {
                     : chat.chatName}
                 </Text>
                 {chat.latestMessage && (
-                  <Text fontSize="xs">
-                    <b>{chat.latestMessage.sender.name} : </b>
-                    {chat.latestMessage.content.length > 50
+                <Text fontSize="xs">
+                  <b>{chat.latestMessage.sender.name} : </b>
+                  {chat.latestMessage.content
+                    ? chat.latestMessage.content.length > 50
                       ? chat.latestMessage.content.substring(0, 51) + "..."
-                      : chat.latestMessage.content}
-                  </Text>
-                )}
+                      : chat.latestMessage.content
+                    : "No content"}
+                </Text>
+              )}
+
               </Box>
             ))}
           </Stack>
